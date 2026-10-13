@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="초고층구조공학특론 강의별 객관식 연습시험과 캔틸레버법·포털법 계산 연습을 선택하세요.">
+  <meta name="description" content="초고층구조공학특론 최종보스 모의시험: L01–L04 전체 범위, 20개 랜덤 케이스, 46문항·100점·60분. 강의별 객관식과 계산 연습도 제공합니다.">
   <meta name="theme-color" content="#183b66">
   <title>초고층구조공학특론 스터디</title>
   <style>
@@ -58,6 +58,9 @@
     h2 { margin: 0; font-size: 21px; letter-spacing: -.03em; }
     .section-note { margin: 0; color: var(--muted); font-size: 13px; }
     .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; margin: 0; }
+    .final-exam .cards { grid-template-columns: 1fr; }
+    .final-exam .card { border-color: #a8bdd4; }
+    .final-exam .tag { background: var(--navy); color: white; }
     .card {
       display: flex;
       flex-direction: column;
@@ -128,10 +131,25 @@
     <div class="wrap">
       <p class="eyebrow">강의자료 기반 연습</p>
       <h1>초고층구조공학특론 스터디</h1>
-      <p class="intro">강의를 선택하고 원하는 케이스로 시험을 시작하세요.</p>
+      <p class="intro">전체 범위 최종 모의시험, 강의별 시험, 구조해석 계산 연습을 선택하세요.</p>
     </div>
   </header>
   <main class="wrap" id="exams">
+    <section class="final-exam" aria-labelledby="final-exam-heading">
+      <div class="section-heading">
+        <h2 id="final-exam-heading">최종 모의시험</h2>
+        <p class="section-note">L01–L04 전체 범위 · 20개 랜덤 케이스</p>
+      </div>
+      <ul class="cards">
+        <li class="card">
+          <div class="card-top"><span class="tag">L01–L04</span><h3>최종보스 ★</h3></div>
+          <p class="facts"><span><strong>46문항</strong></span><span><strong>100점</strong></span><span><strong>60분</strong> 타이머</span></p>
+          <p class="detail">객관식 45문항: 강의별 8·14·17·6문항, 각 2점으로 총 90점<br>L03 숫자 풀이 1문항: 10점</p>
+          <p class="detail">시간 종료 시 자동 제출 · 채점 결과와 정답·풀이 표시</p>
+          <a class="start" href="최종보스.html"><span>최종보스 시험 시작</span><span class="arrow" aria-hidden="true">→</span></a>
+        </li>
+      </ul>
+    </section>
     <section aria-labelledby="multiple-choice-heading">
       <div class="section-heading">
         <h2 id="multiple-choice-heading">객관식 연습시험</h2>
