@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>캔틸레버법 10분 연습문제</title>
+  <style>
+    :root {
+      --ink:#172033; --muted:#64748b; --line:#cbd5e1; --paper:#ffffff;
+      --bg:#eef3f8; --navy:#183b66; --blue:#2563eb; --orange:#ea580c;
+      --green:#15803d; --red:#b91c1c; --soft:#f8fafc; --yellow:#fef3c7;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Segoe UI Symbol",sans-serif;line-height:1.55}
+    button,textarea,input{font:inherit}
+    .app{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
+    .hero{background:linear-gradient(135deg,#102a49,#1d4f7a);color:#fff;border-radius:22px;padding:28px 30px;box-shadow:0 18px 50px rgba(15,23,42,.16)}
+    .hero h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}
+    .hero p{margin:0;color:#dbeafe}
+    .rules{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}
+    .rule{background:rgba(255,255,255,.1);padding:12px 14px;border-radius:12px;font-size:14px}
+    .problem-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px}
+    .nav-btn,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+    .nav-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .btn.danger{background:#fff1f2;color:var(--red);border-color:#fecdd3}
+    .problem{display:none;background:var(--paper);border-radius:20px;padding:26px;box-shadow:0 10px 32px rgba(15,23,42,.09)}
+    .problem.active{display:block}
+    .problem-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:18px}
+    .eyebrow{color:var(--blue);font-weight:800;font-size:13px;letter-spacing:.08em}
+    h2{margin:4px 0 4px;font-size:28px;letter-spacing:-.03em}
+    h3{margin:28px 0 10px;font-size:20px}
+    h4{margin:20px 0 8px;font-size:17px}
+    .subtitle,.note{color:var(--muted);margin:0}
+    .timer-box{min-width:230px;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:14px}
+    .timer-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .timer{font:800 30px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--navy);font-variant-numeric:tabular-nums}
+    .timer.warning{color:var(--orange)} .timer.expired{color:var(--red)}
+    .timer-actions{display:flex;gap:6px;margin-top:10px}.timer-actions .btn{padding:7px 10px;font-size:13px;flex:1}
+    .status{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr);gap:22px;align-items:start;margin-top:20px}
+    .diagram-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;overflow:auto}
+    .diagram-wrap svg{display:block;width:100%;height:auto;min-width:600px}
+    .question-box{background:var(--soft);border-left:4px solid var(--navy);padding:18px;border-radius:0 12px 12px 0}
+    .question-box ol{margin:8px 0 0;padding-left:22px}.question-box li{margin:7px 0}
+    .assumptions{margin:16px 0 0;padding:14px 18px;background:var(--yellow);border-radius:12px;font-size:14px}
+    .scratch{width:100%;min-height:130px;border:1px solid var(--line);border-radius:10px;padding:12px;resize:vertical;background:#fff}
+    .solution-gate{display:flex;justify-content:center;margin:24px 0 4px}
+    .solution{display:none;margin-top:24px;border-top:2px solid var(--navy);padding-top:22px}
+    .solution.open{display:block}
+    .formula{background:#eff6ff;border-radius:10px;padding:13px 15px;overflow:auto;line-height:1.9;letter-spacing:-.01em}
+    .formula-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:30px}
+    .math{font-family:"Cambria Math","STIX Two Math","Times New Roman","Malgun Gothic",serif;letter-spacing:0;white-space:nowrap}
+    .math-var{font-style:italic}
+    sub{font-size:.72em;line-height:0;vertical-align:-.32em;margin-left:.04em}
+    .frac{display:inline-grid;grid-template-rows:auto auto;vertical-align:middle;text-align:center;line-height:1.05;margin:0 .18em;min-width:2.2em}
+    .frac>.num{padding:0 .22em .12em;border-bottom:1.35px solid currentColor}
+    .frac>.den{padding:.12em .22em 0}
+    .math-sep{color:#64748b;margin:0 .2em}
+    svg text{font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Segoe UI Symbol",sans-serif;font-variant-numeric:tabular-nums}
+    .solve-roadmap{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 22px;counter-reset:solve}
+    .road-step{position:relative;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 10px 10px 38px;font-size:13px;min-height:62px}
+    .road-step::before{counter-increment:solve;content:counter(solve);position:absolute;left:10px;top:11px;width:21px;height:21px;border-radius:50%;background:var(--navy);color:#fff;text-align:center;font-weight:800;line-height:21px}
+    .calc-block{margin:12px 0 18px;border-left:4px solid #93c5fd;background:#f8fbff;border-radius:0 10px 10px 0;padding:12px 15px}
+    .calc-block-title{font-weight:800;margin-bottom:6px;color:#1e3a5f}
+    .calc-line{padding:5px 0;border-bottom:1px dashed #dbe5ef;font-size:14px}
+    .calc-line:last-child{border-bottom:0}
+    .beginner-tip,.mistake-box{margin:12px 0;padding:12px 14px;border-radius:10px;font-size:14px}
+    .beginner-tip{background:#ecfdf5;border-left:4px solid #22c55e}
+    .mistake-box{background:#fff7ed;border-left:4px solid #f97316}
+    .diagram-reading{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+    .reading-item{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px}
+    .reading-item b{display:block;margin-bottom:4px;color:var(--navy)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:480px;font-size:14px}
+    th,td{padding:9px 11px;border-bottom:1px solid #e2e8f0;text-align:center;white-space:nowrap}
+    th{background:#f1f5f9;color:#334155;font-weight:800}tr:last-child td{border-bottom:0}
+    .force-grid{display:grid;grid-template-columns:1fr;gap:20px;margin-top:14px}
+    .force-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.05)}
+    .force-title{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+    .force-card h4{margin:0;font-size:18px}
+    .force-caption{color:var(--muted);font-size:13px}
+    .force-card svg{display:block;width:100%;height:auto;max-height:520px}
+    .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0}
+    .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+    .footer-note{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+    .pill{display:inline-block;background:#e0ecff;color:#17457a;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:800;margin-left:6px}
+    .answer-sheet{margin-top:24px;border:2px solid #bfdbfe;background:#f8fbff;border-radius:16px;padding:18px}
+    .answer-sheet h3{margin:0 0 4px}.answer-sheet h4{margin:18px 0 8px}
+    .answer-guide{margin:0 0 12px;color:var(--muted);font-size:14px}
+    .answer-input{width:82px;max-width:100%;padding:7px 8px;border:1.5px solid #94a3b8;border-radius:7px;text-align:right;background:#fff;font-variant-numeric:tabular-nums}
+    .answer-input:focus{outline:3px solid #bfdbfe;border-color:var(--blue)}
+    .answer-input.correct{border-color:var(--green);background:#f0fdf4;color:#166534}
+    .answer-input.wrong{border-color:var(--red);background:#fff1f2;color:#991b1b}
+    .answer-input.blank{border-color:#d97706;background:#fffbeb}
+    .answer-feedback{display:block;min-height:17px;margin-top:2px;font-size:11px;line-height:1.25;color:var(--red);white-space:nowrap}
+    .answer-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px}
+    .answer-result{display:none;flex:1;min-width:220px;padding:10px 12px;border-radius:9px;font-weight:800}
+    .answer-result.show{display:block}.answer-result.pass{background:#dcfce7;color:#166534}.answer-result.retry{background:#fff7ed;color:#9a3412}
+    .not-graded{margin-top:12px;padding:10px 12px;border-left:4px solid #64748b;background:#f1f5f9;border-radius:0 8px 8px 0;font-size:13px}
+    @media(max-width:850px){.rules{grid-template-columns:1fr 1fr}.layout,.grid-2{grid-template-columns:1fr}.problem-head{flex-direction:column}.timer-box{width:100%}.solve-roadmap{grid-template-columns:1fr 1fr}.diagram-reading{grid-template-columns:1fr}}
+    @media(max-width:520px){.app{padding:14px 10px 40px}.hero,.problem{padding:18px}.rules{grid-template-columns:1fr}.nav-btn{flex:1}.diagram-wrap svg{min-width:520px}}
+    @media print{body{background:#fff}.app{max-width:none;padding:0}.hero,.problem-nav,.timer-box,.solution-gate,.scratch-label,.scratch{display:none!important}.problem{display:block!important;box-shadow:none;border-radius:0;break-after:page;padding:12mm}.solution{display:none!important}.layout{grid-template-columns:1fr}.diagram-wrap{border:0}.problem-head{border:0}.question-box{background:#fff;border:1px solid #999}.problem:not(.active){display:none!important}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="hero">
+    <h1>캔틸레버법 10분 연습</h1>
+    <p>전도모멘트에서 기둥 축력으로 · 1경간부터 3층 3경간까지</p>
+    <div class="rules">
+      <div class="rule"><b>① 변곡점</b><br>보·기둥 중앙에서 M=0</div>
+      <div class="rule"><b>② 축력 분포</b><br>Pᵢ ∝ Aᵢxᵢ</div>
+      <div class="rule"><b>③ 계산 출발점</b><br>층전단력이 아닌 전도모멘트</div>
+      <div class="rule"><b>④ 공통 치수</b><br>L=6 m, h=6 m</div>
+    </div>
+  </header>
+  <nav id="problemNav" class="problem-nav" aria-label="문제 선택"></nav>
+  <div id="problems"></div>
+</main>
+
+<script>
+const problems = [
+  {id:1,title:'기본 1층 1경간',level:'입문',bays:1,stories:1,loads:[24]},
+  {id:2,title:'2층 1경간',level:'기초',bays:1,stories:2,loads:[24,16]},
+  {id:3,title:'2층 2경간',level:'중급',bays:2,stories:2,loads:[32,24]},
+  {id:4,title:'3층 2경간',level:'중상급',bays:2,stories:3,loads:[40,32,24]},
+  {id:5,title:'3층 3경간',level:'시험형',bays:3,stories:3,loads:[60,48,36]}
+].map(p=>({...p,span:6,height:6}));
+
+const timers = {};
+let activeId = 1;
+
+function calc(p){
+  const x=Array.from({length:p.bays+1},(_,c)=>c*p.span-p.bays*p.span/2);
+  const sumX2=x.reduce((sum,v)=>sum+v*v,0);
+  const storyShear=p.loads.map((_,s)=>p.loads.slice(s).reduce((a,b)=>a+b,0));
+  const overturning=p.loads.map((_,s)=>p.loads.slice(s).reduce((sum,H,k)=>sum+H*(k+.5)*p.height,0));
+  const colAxial=overturning.map(M=>x.map(xi=>M*xi/sumX2));
+  const axialChange=colAxial.map((row,f)=>row.map((v,c)=>v-(f+1<p.stories?colAxial[f+1][c]:0)));
+  const beamShear=axialChange.map(row=>{
+    let cumulative=0;
+    return Array.from({length:p.bays},(_,b)=>{cumulative+=row[b];return Math.abs(cumulative)});
+  });
+  const beamMoment=beamShear.map(row=>row.map(v=>v*p.span/2));
+  const jointBeamMoment=beamMoment.map(row=>Array.from({length:p.bays+1},(_,c)=>{
+    if(c===0)return row[0];
+    if(c===p.bays)return row[p.bays-1];
+    return row[c-1]+row[c];
+  }));
+  const colMoment=Array.from({length:p.stories},()=>Array(p.bays+1).fill(0));
+  for(let f=p.stories-1;f>=0;f--){
+    for(let c=0;c<=p.bays;c++){
+      const upper=f+1<p.stories?colMoment[f+1][c]:0;
+      colMoment[f][c]=jointBeamMoment[f][c]-upper;
+    }
+  }
+  const colShear=colMoment.map(row=>row.map(m=>2*m/p.height));
+  const beamAxial=p.loads.map((H,f)=>{
+    let transmitted=0;
+    return Array.from({length:p.bays},(_,b)=>{
+      const upper=f+1<p.stories?colShear[f+1][b]:0;
+      transmitted=(b===0?H:transmitted)+upper-colShear[f][b];
+      return Math.abs(transmitted);
+    });
+  });
+  return {x,sumX2,storyShear,overturning,colAxial,axialChange,beamShear,beamMoment,jointBeamMoment,colMoment,colShear,beamAxial};
+}
+
+function fmt(n){return Number.isInteger(n)?String(n):n.toFixed(1)}
+function floorName(f,total){return f===total-1?'옥상층':`${f+1}층`}
+function colName(c,total){return c===0?'좌측 외부':c===total-1?'우측 외부':`내부 ${c}`}
+function jointLabels(p){
+  const rows=[];let code=65;
+  for(let r=0;r<=p.stories;r++){const row=[];for(let c=0;c<=p.bays;c++)row.push(String.fromCharCode(code++));rows.push(row)}
+  return rows;
+}
+
+function markerDefs(id){return `<defs><marker id="arr${id}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#b91c1c"/></marker></defs>`}
+
+function frameSvg(p,mode='problem'){
+  const R=calc(p), labels=jointLabels(p), W=760, top=55, bottom=420, left=150, right=680;
+  const dx=(right-left)/p.bays, dy=(bottom-top)/p.stories;
+  const H=500, id=`${mode}${p.id}`;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${p.title} 골조도">${markerDefs(id)}`;
+  s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  for(let c=0;c<=p.bays;c++){
+    const x=left+c*dx;
+    s+=`<line x1="${x}" y1="${top}" x2="${x}" y2="${bottom}" stroke="#172033" stroke-width="3"/>`;
+    s+=`<line x1="${x-20}" y1="${bottom+4}" x2="${x+20}" y2="${bottom+4}" stroke="#172033" stroke-width="3"/>`;
+    for(let k=-16;k<=12;k+=9)s+=`<line x1="${x+k}" y1="${bottom+4}" x2="${x+k-8}" y2="${bottom+14}" stroke="#172033" stroke-width="1.5"/>`;
+  }
+  for(let f=0;f<p.stories;f++){
+    const y=bottom-(f+1)*dy;
+    s+=`<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#172033" stroke-width="3"/>`;
+    const ay=y, ax=25;
+    s+=`<line x1="${ax}" y1="${ay}" x2="${left-10}" y2="${ay}" stroke="#b91c1c" stroke-width="3" marker-end="url(#arr${id})"/>`;
+    s+=`<text x="${ax}" y="${ay-10}" fill="#b91c1c" font-size="17" font-weight="700">${p.loads[f]} kN</text>`;
+  }
+  for(let r=0;r<=p.stories;r++)for(let c=0;c<=p.bays;c++){
+    const x=left+c*dx,y=bottom-r*dy;
+    s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="#fff" stroke="#172033" stroke-width="2"/>`;
+    s+=`<text x="${x+9}" y="${y-8}" fill="#172033" font-size="16" font-weight="700">${labels[r][c]}</text>`;
+  }
+  for(let f=0;f<p.stories;f++)for(let b=0;b<p.bays;b++){
+    const x=left+(b+.5)*dx,y=bottom-(f+1)*dy;
+    s+=`<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#64748b" stroke-width="2"/>`;
+  }
+  for(let st=0;st<p.stories;st++)for(let c=0;c<=p.bays;c++){
+    const x=left+c*dx,y=bottom-(st+.5)*dy;
+    s+=`<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#64748b" stroke-width="2"/>`;
+  }
+  for(let b=0;b<p.bays;b++){
+    const x1=left+b*dx,x2=x1+dx,y=bottom+48;
+    s+=`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#64748b"/><line x1="${x1}" y1="${y-7}" x2="${x1}" y2="${y+7}" stroke="#64748b"/><line x1="${x2}" y1="${y-7}" x2="${x2}" y2="${y+7}" stroke="#64748b"/><text x="${(x1+x2)/2}" y="${y+22}" text-anchor="middle" fill="#475569" font-size="15">6 m</text>`;
+  }
+  for(let st=0;st<p.stories;st++){
+    const y1=bottom-st*dy,y2=y1-dy,x=right+38;
+    s+=`<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="#64748b"/><line x1="${x-7}" y1="${y1}" x2="${x+7}" y2="${y1}" stroke="#64748b"/><line x1="${x-7}" y1="${y2}" x2="${x+7}" y2="${y2}" stroke="#64748b"/><text x="${x+12}" y="${(y1+y2)/2+5}" fill="#475569" font-size="15">6 m</text>`;
+  }
+  s+=`</svg>`;return s;
+}
+
+function forceSvg(p,type){
+  const R=calc(p), W=980,H=550,left=160,right=820,top=105,bottom=455,dx=(right-left)/p.bays,dy=(bottom-top)/p.stories;
+  const positive='#2563eb',negative='#dc2626',tension=positive,compression=negative,gray='#94a3b8',dark='#172033';
+  const signed=(n)=>n>0?`+${fmt(n)}`:n<0?`−${fmt(Math.abs(n))}`:'0';
+  const box=(x,y,text,color,anchor='middle')=>{
+    const width=Math.max(38,text.length*7.2+14), bx=anchor==='middle'?x-width/2:anchor==='end'?x-width:x;
+    const tx=anchor==='middle'?x:anchor==='end'?x-7:x+7;
+    return `<rect x="${bx}" y="${y-14}" width="${width}" height="20" rx="4" fill="#fff" stroke="${color}" stroke-width="1"/><text x="${tx}" y="${y}" text-anchor="${anchor}" fill="${color}" font-size="12" font-weight="700">${text}</text>`;
+  };
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${type} 부재력도"><rect width="${W}" height="${H}" fill="#fff"/>`;
+  for(let st=0;st<p.stories;st++){
+    const y=bottom-(st+.5)*dy;
+    s+=`<text x="28" y="${y+4}" fill="#64748b" font-size="12">${st+1}층 기둥</text>`;
+  }
+  for(let c=0;c<=p.bays;c++)s+=`<line x1="${left+c*dx}" y1="${top}" x2="${left+c*dx}" y2="${bottom}" stroke="${gray}" stroke-width="2"/>`;
+  for(let f=0;f<p.stories;f++)s+=`<line x1="${left}" y1="${bottom-(f+1)*dy}" x2="${right}" y2="${bottom-(f+1)*dy}" stroke="${gray}" stroke-width="2"/>`;
+  for(let st=0;st<p.stories;st++)for(let c=0;c<=p.bays;c++){
+    const x=left+c*dx,y=bottom-(st+.5)*dy;s+=`<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#cbd5e1"/>`;
+  }
+  for(let f=0;f<p.stories;f++)for(let b=0;b<p.bays;b++){
+    const x=left+(b+.5)*dx,y=bottom-(f+1)*dy;s+=`<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#cbd5e1"/>`;
+  }
+  if(type==='NFD'){
+    const maxN=Math.max(...R.beamAxial.flat(),...R.colAxial.flat().map(Math.abs)),scale=38/maxN;
+    for(let f=0;f<p.stories;f++)for(let b=0;b<p.bays;b++){
+      const y=bottom-(f+1)*dy,x1=left+b*dx,x2=x1+dx,n=-R.beamAxial[f][b],a=Math.abs(n)*scale;
+      s+=`<path d="M ${x1} ${y} L ${x1} ${y-a} L ${x2} ${y-a} L ${x2} ${y} Z" fill="${compression}" fill-opacity=".14" stroke="${compression}" stroke-width="1.5"/>${box((x1+x2)/2,y-a/2+4,`N=${signed(n)} 압축`,compression)}`;
+    }
+    for(let st=0;st<p.stories;st++)for(let c=0;c<=p.bays;c++){
+      const x=left+c*dx,y1=bottom-st*dy,y2=y1-dy,n=R.colAxial[st][c],a=Math.abs(n)*scale;
+      const isTension=n<0,color=isTension?tension:compression,dir=isTension?-1:1;
+      s+=`<rect x="${dir<0?x-a:x}" y="${y2}" width="${a}" height="${dy}" fill="${color}" fill-opacity=".14" stroke="${color}" stroke-width="1.5"/>${box(x+dir*(a+8),(y1+y2)/2,`N=${signed(-n)} ${isTension?'인장':'압축'}`,color,dir<0?'end':'start')}`;
+    }
+    s+=`<text x="${W/2}" y="525" text-anchor="middle" fill="#64748b" font-size="12">기둥: 좌측 인장·우측 압축 · 보: 수평평형에 따른 압축축력 · 도형 폭은 |N|에 비례</text>`;
+  }
+  if(type==='SFD'){
+    const maxV=Math.max(...R.colShear.flat(),...R.beamShear.flat()),scale=38/maxV;
+    for(let st=0;st<p.stories;st++)for(let c=0;c<=p.bays;c++){
+      const x=left+c*dx,y1=bottom-st*dy,y2=y1-dy,y=(y1+y2)/2,v=R.colShear[st][c],a=v*scale;
+      s+=`<rect x="${x}" y="${y2}" width="${a}" height="${dy}" fill="${positive}" fill-opacity=".2" stroke="${positive}" stroke-width="1.5"/>${box(x+a+7,y,signed(v),positive,'start')}`;
+    }
+    for(let f=0;f<p.stories;f++)for(let b=0;b<p.bays;b++){
+      const y=bottom-(f+1)*dy,x1=left+b*dx,x2=x1+dx,x=(x1+x2)/2,v=-R.beamShear[f][b],a=Math.abs(v)*scale;
+      s+=`<path d="M ${x1} ${y} L ${x1} ${y-a} L ${x2} ${y-a} L ${x2} ${y} Z" fill="${negative}" fill-opacity=".2" stroke="${negative}" stroke-width="1.5"/>${box(x,y-a-9,signed(v),negative)}`;
+    }
+    s+=`<text x="${W/2}" y="525" text-anchor="middle" fill="#64748b" font-size="12">파랑 = +V · 빨강 = −V · 도형 폭은 |V|에 비례</text>`;
+  }
+  if(type==='BMD'){
+    const maxM=Math.max(...R.colMoment.flat(),...R.beamMoment.flat()),scale=46/maxM;
+    for(let st=0;st<p.stories;st++)for(let c=0;c<=p.bays;c++){
+      const x=left+c*dx,y1=bottom-st*dy,y2=y1-dy,ym=(y1+y2)/2,m=R.colMoment[st][c],a=m*scale;
+      s+=`<path d="M ${x} ${y1} L ${x-a} ${y1} L ${x} ${ym} Z" fill="${negative}" fill-opacity=".2" stroke="${negative}" stroke-width="1.5"/><path d="M ${x} ${ym} L ${x+a} ${y2} L ${x} ${y2} Z" fill="${positive}" fill-opacity=".2" stroke="${positive}" stroke-width="1.5"/>`;
+      s+=box(x+a+8,ym-7,signed(m),positive,'start')+box(x+a+8,ym+17,signed(-m),negative,'start');
+    }
+    for(let f=0;f<p.stories;f++)for(let b=0;b<p.bays;b++){
+      const y=bottom-(f+1)*dy,x1=left+b*dx,x2=x1+dx,xm=(x1+x2)/2,m=R.beamMoment[f][b],a=m*scale;
+      s+=`<path d="M ${x1} ${y} L ${x1} ${y+a} L ${xm} ${y} Z" fill="${positive}" fill-opacity=".2" stroke="${positive}" stroke-width="1.5"/><path d="M ${xm} ${y} L ${x2} ${y-a} L ${x2} ${y} Z" fill="${negative}" fill-opacity=".2" stroke="${negative}" stroke-width="1.5"/>`;
+      s+=box(x1+dx*.24,y+a*.55+8,signed(m),positive)+box(x1+dx*.76,y-a*.55-7,signed(-m),negative);
+    }
+    s+=`<text x="${W/2}" y="525" text-anchor="middle" fill="#64748b" font-size="12">보: +M 아래쪽 / −M 위쪽 · 기둥: +M 오른쪽 / −M 왼쪽 · 중앙 ○에서 M=0</text>`;
+  }
+  s+=`<text x="${W/2}" y="25" text-anchor="middle" fill="${dark}" font-size="14" font-weight="700">공통 최대값 기준 선형 스케일 · 단위: ${type==='BMD'?'kN·m':'kN'}</text></svg>`;
+  return s;
+}
+
+function table(headers,rows){return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+
+function answerInput(p,key,value,label){
+  return `<input class="answer-input" id="ans-${p.id}-${key}" data-answer="${value}" inputmode="decimal" autocomplete="off" aria-label="${label}"><span class="answer-feedback" aria-live="polite"></span>`;
+}
+
+function answerSheetHtml(p){
+  const R=calc(p),cols=Array.from({length:p.bays+1},(_,i)=>colName(i,p.bays+1));
+  const axisRows=[['x (m)',...R.x.map((v,c)=>answerInput(p,`x-${c}`,v,`${cols[c]} 도심 기준거리`))],['x² (m²)',...R.x.map((v,c)=>answerInput(p,`x2-${c}`,v*v,`${cols[c]} 도심 기준거리 제곱`))],['Σx² (m²)',answerInput(p,'sumx2',R.sumX2,'도심 기준거리 제곱합'),...Array(p.bays).fill('')]];
+  const axialRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>[
+    `${s+1}층 기둥`,answerInput(p,`ot-${s}`,R.overturning[s],`${s+1}층 절단면 전도모멘트`),...R.colAxial[s].map((v,c)=>answerInput(p,`cn-${s}-${c}`,-v,`${s+1}층 ${cols[c]} 기둥 축력`))
+  ]);
+  const beamRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(f=>[
+    floorName(f,p.stories),...R.beamShear[f].map((v,b)=>`${answerInput(p,`bv-${f}-${b}`,v,`${floorName(f,p.stories)} 보 ${b+1} 전단력`)} / ${answerInput(p,`bm-${f}-${b}`,R.beamMoment[f][b],`${floorName(f,p.stories)} 보 ${b+1} 단부모멘트`)}`)
+  ]);
+  const colRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>[
+    `${s+1}층 기둥`,answerInput(p,`story-${s}`,R.storyShear[s],`${s+1}층 층전단력`),...R.colMoment[s].map((m,c)=>`${answerInput(p,`cm-${s}-${c}`,m,`${s+1}층 ${cols[c]} 기둥 단부모멘트`)} / ${answerInput(p,`cv-${s}-${c}`,R.colShear[s][c],`${s+1}층 ${cols[c]} 기둥 전단력`)}`)
+  ]);
+  const beamAxialRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(f=>[
+    floorName(f,p.stories),...R.beamAxial[f].map((v,b)=>answerInput(p,`bn-${f}-${b}`,-v,`${floorName(f,p.stories)} 보 ${b+1} 축력`))
+  ]);
+  return `<section class="answer-sheet" id="answers-${p.id}">
+    <h3>계산 답안지</h3><p class="answer-guide">숫자만 입력하세요. 소수는 한 자리로 반올림해도 정답으로 인정합니다. 기둥·보 축력은 인장(+)·압축(−) 부호까지 입력하세요.</p>
+    <h4>1. 기둥군 도심</h4>${table(['항목',...cols],axisRows)}
+    <h4>2. 전도모멘트 Mext (kN·m)와 기둥 축력 N (kN)</h4>${table(['구간','Mext',...cols.map(c=>`${c} N`)],axialRows)}
+    <h4>3. 보 전단력 V / 단부모멘트 M</h4>${table(['바닥',...Array.from({length:p.bays},(_,b)=>`보 ${b+1} V / M`)],beamRows)}
+    <h4>4. 기둥 단부모멘트 M / 전단력 V</h4>${table(['구간','층전단력',...cols.map(c=>`${c} M / V`)],colRows)}
+    <h4>5. 보 축력 N (kN, 인장 + / 압축 −)</h4>${table(['바닥',...Array.from({length:p.bays},(_,b)=>`보 ${b+1}`)],beamAxialRows)}
+    <div class="answer-actions"><button class="btn primary" type="button" onclick="gradeAnswers(${p.id})">채점하기</button><button class="btn" type="button" onclick="clearAnswers(${p.id})">답안 지우기</button><div class="answer-result" id="answer-result-${p.id}" aria-live="polite"></div></div>
+    <div class="not-graded"><b>채점 제외:</b> NFD·SFD·BMD 부재력도는 아래 풀이에서 확인하며 점수에는 포함하지 않습니다.</div>
+  </section>`;
+}
+
+function overturningStepHtml(p,R){
+  const lines=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>{
+    const terms=p.loads.slice(s).map((H,k)=>`${H}&times;${fmt((k+.5)*p.height)}`).join(' + ');
+    return `<div class="calc-line"><b>${s+1}층 기둥 중앙 절단:</b> <span class="math"><span class="math-var">M</span><sub>${s+1}</sub> = ${terms} = ${fmt(R.overturning[s])} kN&middot;m</span></div>`;
+  }).join('');
+  return `<div class="calc-block"><div class="calc-block-title">전도모멘트 계산</div><div class="calc-line">각 층 기둥 중앙에서 절단하고, 절단면 위의 모든 횡하중에 거리(모멘트팔)를 곱합니다.</div>${lines}</div>`;
+}
+
+function axialStepHtml(p,R){
+  const lines=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>{
+    const forces=R.colAxial[s].map((v,c)=>`P<sub>${c+1}</sub> = ${v<0?'+':'&minus;'}${fmt(Math.abs(v))} ${v<0?'인장':'압축'}`).join('<span class="math-sep">·</span>');
+    return `<div class="calc-line"><b>${s+1}층:</b> <span class="math">k = ${fmt(R.overturning[s])} &divide; ${fmt(R.sumX2)} = ${fmt(R.overturning[s]/R.sumX2)}</span><br>${forces}</div>`;
+  }).join('');
+  return `<div class="calc-block"><div class="calc-block-title">전도모멘트를 기둥 축력으로 분배</div><div class="calc-line"><span class="math"><span class="math-var">P</span><sub>i</sub> = <span class="math-var">M x</span><sub>i</sub> &divide; &sum;<span class="math-var">x</span><sub>j</sub><sup>2</sup></span>. 이 자료에서는 모든 기둥의 단면적이 같다고 가정합니다.</div>${lines}</div>`;
+}
+
+function beamStepHtml(p,R){
+  return Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(f=>{
+    const delta=R.axialChange[f].map(v=>fmt(v)).join(', ');
+    const shears=R.beamShear[f].map(fmt).join(', ');
+    const moments=R.beamMoment[f].map(fmt).join(', ');
+    return `<div class="calc-block"><div class="calc-block-title">${floorName(f,p.stories)} 보</div><div class="calc-line">기둥 축력 변화량 <span class="math">&Delta;P = [${delta}] kN</span></div><div class="calc-line">왼쪽부터 누적하여 보 전단력 <span class="math">V<sub>g</sub> = [${shears}] kN</span></div><div class="calc-line"><span class="math">M<sub>g</sub>=V<sub>g</sub>L/2</span>이므로 보 단부모멘트 <span class="math">M<sub>g</sub> = [${moments}] kN&middot;m</span></div></div>`;
+  }).join('');
+}
+
+function columnStepHtml(p,R){
+  const lines=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>{
+    const moments=R.colMoment[s].map(fmt).join(', '),shears=R.colShear[s].map(fmt).join(', '),sum=R.colShear[s].reduce((a,b)=>a+b,0);
+    return `<div class="calc-line"><b>${s+1}층:</b> <span class="math">M<sub>c</sub> = [${moments}] kN&middot;m</span><br><span class="math">V<sub>c</sub>=2M<sub>c</sub>/h = [${shears}] kN</span>, 합계 <span class="math">${fmt(sum)} kN = V<sub>story</sub></span></div>`;
+  }).join('');
+  return `<div class="calc-block"><div class="calc-block-title">절점 모멘트평형과 기둥전단력</div><div class="calc-line">최상층부터 계산합니다. 한 절점의 좌우 보 단부모멘트를 더하고, 이미 계산된 윗기둥 모멘트를 빼서 아랫기둥 모멘트를 구합니다.</div>${lines}</div>`;
+}
+
+function solutionHtml(p){
+  const R=calc(p), cols=Array.from({length:p.bays+1},(_,i)=>colName(i,p.bays+1));
+  const axisRows=[['도심 기준거리 x (m)',...R.x.map(fmt)],['x² (m²)',...R.x.map(v=>fmt(v*v))],['합계','','Σx² = '+fmt(R.sumX2),...Array(Math.max(0,p.bays-1)).fill('')]];
+  const axialRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>[
+    `${s+1}층 기둥`,fmt(R.overturning[s]),...R.colAxial[s].map(v=>v<0?`+${fmt(-v)} 인장`:`−${fmt(v)} 압축`)
+  ]);
+  const beamRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(f=>[
+    floorName(f,p.stories),...R.beamShear[f].map((v,b)=>`${fmt(v)} / ${fmt(R.beamMoment[f][b])}`)
+  ]);
+  const colRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(s=>[
+    `${s+1}층 기둥`,fmt(R.storyShear[s]),...R.colMoment[s].map((m,c)=>`${fmt(m)} / ${fmt(R.colShear[s][c])}`)
+  ]);
+  const beamAxialRows=Array.from({length:p.stories},(_,k)=>p.stories-1-k).map(f=>[
+    floorName(f,p.stories),...R.beamAxial[f].map(v=>`−${fmt(v)} 압축`)
+  ]);
+  return `
+    <section class="solution" id="solution-${p.id}">
+      <h3>풀이</h3>
+      <div class="solve-roadmap" aria-label="풀이 순서">
+        <div class="road-step"><b>기둥군 도심</b><br>x와 Σx² 계산</div>
+        <div class="road-step"><b>전도모멘트</b><br>횡하중 × 높이</div>
+        <div class="road-step"><b>기둥 축력</b><br>Pᵢ=Mxᵢ/Σx²</div>
+        <div class="road-step"><b>보·기둥력</b><br>절점 평형으로 계산</div>
+        <div class="road-step"><b>부재력도</b><br>부호와 축척 확인</div>
+      </div>
+      <div class="beginner-tip"><b>처음 풀 때의 핵심:</b> 캔틸레버법은 층전단력의 기둥 배분에서 시작하지 않습니다. 각 층 기둥 중앙의 전도모멘트를 먼저 구한 다음, 도심에서 멀수록 큰 기둥 축력을 배분합니다.</div>
+      <div class="formula">
+        <div class="formula-line"><span class="math"><span class="math-var">M</span><sub>ext</sub> = &sum;<span class="math-var">H</span><sub>k</sub><span class="math-var">z</span><sub>k</sub></span><span class="math-sep">·</span><span class="math"><span class="math-var">P</span><sub>i</sub> = <span class="frac"><span class="num"><span class="math-var">M A</span><sub>i</sub><span class="math-var">x</span><sub>i</sub></span><span class="den">&sum;<span class="math-var">A</span><sub>j</sub><span class="math-var">x</span><sub>j</sub><sup>2</sup></span></span></span></div>
+        <div class="formula-line"><span class="math"><span class="math-var">V</span><sub>g</sub> = 누적(&Delta;<span class="math-var">P</span>)</span><span class="math-sep">·</span><span class="math"><span class="math-var">M</span><sub>g</sub> = <span class="math-var">V</span><sub>g</sub><span class="math-var">L</span>/2</span><span class="math-sep">·</span><span class="math"><span class="math-var">V</span><sub>c</sub> = 2<span class="math-var">M</span><sub>c</sub>/<span class="math-var">h</span></span></div>
+      </div>
+      <h4>1. 기둥군 도심</h4>
+      ${table(['항목',...cols],axisRows)}
+      <p class="note">모든 기둥의 단면적이 같으므로 기하학적 중앙이 도심입니다. 단면적이 다르면 x̄=ΣAᵢXᵢ/ΣAᵢ를 사용합니다.</p>
+      <h4>2. 전도모멘트와 기둥 축력</h4>
+      ${table(['기둥 구간','Mext (kN·m)',...cols],axialRows)}
+      ${overturningStepHtml(p,R)}
+      ${axialStepHtml(p,R)}
+      <h4>3. 보 전단력과 단부모멘트</h4>
+      ${table(['바닥',...Array.from({length:p.bays},(_,b)=>`보 ${b+1} V / M`)],beamRows)}
+      <p class="note">표의 단위는 V가 kN, M이 kN·m입니다. 보 중앙의 변곡점 때문에 M=V×L/2입니다.</p>
+      ${beamStepHtml(p,R)}
+      <h4>4. 기둥 모멘트와 전단력</h4>
+      ${table(['구간','층전단력',...cols.map(c=>`${c} M / V`)],colRows)}
+      <p class="note">각 행의 기둥전단력 합은 해당 층전단력과 일치해야 합니다.</p>
+      ${columnStepHtml(p,R)}
+      <h4>5. 보 축력과 전체 부재력도</h4>
+      ${table(['바닥',...Array.from({length:p.bays},(_,b)=>`보 ${b+1} N`)],beamAxialRows)}
+      <p class="note">보 축력은 캔틸레버법의 주 출발값은 아니며, 기둥전단력을 구한 뒤 절점 수평평형으로 산정했습니다.</p>
+      <div class="formula">
+        <div class="formula-line"><b>부호 규약</b><span class="math"><span class="math-var">N</span>(+) = 인장</span><span class="math-sep">·</span><span>보 국부축: 좌 → 우</span><span class="math-sep">·</span><span>기둥 국부축: 하 → 상</span></div>
+        <div class="formula-line"><span class="math"><span class="frac"><span class="num">d<span class="math-var">M</span></span><span class="den">d<span class="math-var">s</span></span></span> = <span class="math-var">V</span></span><span class="math-sep">·</span><span>보의 +<span class="math-var">M</span>은 아래쪽, 기둥의 +<span class="math-var">M</span>은 오른쪽에 표시</span></div>
+      </div>
+      <div class="legend"><span><i class="swatch" style="background:#2563eb"></i>양(+) 부재력</span><span><i class="swatch" style="background:#dc2626"></i>음(−) 부재력</span><span>옅은 채움 + 진한 외곽선 = 부재력도</span><span>회색선 = 원래 골조</span></div>
+      <div class="diagram-reading">
+        <div class="reading-item"><b>축력도 NFD</b>기둥군 도심에서 멀수록 축력이 커집니다. +N은 인장, −N은 압축입니다.</div>
+        <div class="reading-item"><b>전단력도 SFD</b>분포하중이 없으므로 각 부재 구간의 전단력은 일정한 직사각형입니다.</div>
+        <div class="reading-item"><b>모멘트도 BMD</b>부재 중앙 변곡점에서 0이고 단부까지 직선으로 변하므로 삼각형입니다.</div>
+      </div>
+      <div class="force-grid">
+        <div class="force-card"><div class="force-title"><h4>축력도 NFD</h4><span class="force-caption">색칠된 면적은 실제 부재가 아니라 축력의 크기를 나타내는 도형입니다.</span></div>${forceSvg(p,'NFD')}</div>
+        <div class="force-card"><div class="force-title"><h4>전단력도 SFD</h4><span class="force-caption">파랑 +V · 빨강 −V</span></div>${forceSvg(p,'SFD')}</div>
+        <div class="force-card"><div class="force-title"><h4>모멘트도 BMD</h4><span class="force-caption">파랑 +M · 빨강 −M</span></div>${forceSvg(p,'BMD')}</div>
+      </div>
+      <div class="mistake-box"><b>자주 하는 실수</b><br>① 층전단력에서 바로 시작하기　② 절단면이 기둥 중앙이라는 점을 놓쳐 모멘트팔을 3 m만큼 틀리기　③ x의 부호를 빼먹어 인장·압축을 뒤집기　④ 보 전단력을 축력 변화량 하나로만 보고 왼쪽부터 누적하지 않기　⑤ ΣV<sub>c</sub>=V<sub>story</sub> 검산을 생략하기</div>
+      <p class="footer-note">각 도형은 해당 부재력도의 공통 최대 절대값을 기준으로 선형 축척했습니다. 따라서 같은 그림 안에서는 도형 폭의 비가 부재력 크기의 비와 같습니다.</p>
+    </section>`;
+}
+
+function problemHtml(p){return `
+  <article class="problem ${p.id===1?'active':''}" id="problem-${p.id}">
+    <div class="problem-head">
+      <div><div class="eyebrow">문제 ${p.id} · ${p.level}</div><h2>${p.title}<span class="pill">10분</span></h2><p class="subtitle">${p.stories}층 ${p.bays}경간 · 경간 6 m · 층고 6 m</p></div>
+      <div class="timer-box">
+        <div class="timer-row"><b>남은 시간</b><span class="timer" id="timer-${p.id}">10:00</span></div>
+        <div class="timer-actions"><button class="btn primary" onclick="toggleTimer(${p.id})" id="start-${p.id}">시작</button><button class="btn" onclick="resetTimer(${p.id})">초기화</button></div>
+        <div class="status" id="status-${p.id}" aria-live="polite">시작 버튼을 누르면 시간이 흐릅니다.</div>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="diagram-wrap">${frameSvg(p)}</div>
+      <div>
+        <div class="question-box"><b>캔틸레버법으로 다음을 구하고 부재력도를 그리시오.</b><ol><li>기둥군 도심과 각 기둥의 x좌표</li><li>각 층 절단면의 전도모멘트</li><li>각 기둥의 인장·압축 축력</li><li>보 전단력·모멘트와 기둥 전단력·모멘트</li><li>NFD, SFD, BMD</li></ol></div>
+        <div class="assumptions"><b>가정</b><br>① 보와 기둥의 중앙은 변곡점이다.<br>② 모든 기둥의 단면적은 동일하다.<br>③ 기둥 축력은 도심축으로부터의 거리 x에 비례한다.<br>④ 모든 접합부는 강접합, 기초는 고정단이다.</div>
+        <h3 class="scratch-label">계산 메모</h3><textarea class="scratch" aria-label="문제 ${p.id} 계산 메모" placeholder="도심 → 전도모멘트 → 기둥 축력 → 보 전단력·모멘트 → 기둥 모멘트·전단력 순서로 계산하세요."></textarea>
+      </div>
+    </div>
+    ${answerSheetHtml(p)}
+    <div class="solution-gate"><button class="btn danger" onclick="showSolution(${p.id})" id="solution-btn-${p.id}">풀이 포기하고 정답 보기</button></div>
+    ${solutionHtml(p)}
+  </article>`}
+
+function render(){
+  document.getElementById('problemNav').innerHTML=problems.map(p=>`<button class="nav-btn ${p.id===1?'active':''}" id="nav-${p.id}" onclick="selectProblem(${p.id})">${p.id}. ${p.title}</button>`).join('');
+  document.getElementById('problems').innerHTML=problems.map(problemHtml).join('');
+  problems.forEach(p=>timers[p.id]={remaining:600,running:false,expired:false});
+}
+
+function selectProblem(id){activeId=id;document.querySelectorAll('.problem').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));document.getElementById(`problem-${id}`).classList.add('active');document.getElementById(`nav-${id}`).classList.add('active');window.scrollTo({top:190,behavior:'smooth'});}
+function updateTimer(id){const t=timers[id],el=document.getElementById(`timer-${id}`),m=Math.floor(t.remaining/60),s=t.remaining%60;el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;el.classList.toggle('warning',t.remaining<=120&&t.remaining>0);el.classList.toggle('expired',t.remaining===0);}
+function toggleTimer(id){const t=timers[id];if(t.expired)return;t.running=!t.running;document.getElementById(`start-${id}`).textContent=t.running?'일시정지':'계속';document.getElementById(`status-${id}`).textContent=t.running?'풀이 중입니다.':'일시정지되었습니다.';}
+function resetTimer(id){const t=timers[id];t.remaining=600;t.running=false;t.expired=false;updateTimer(id);const start=document.getElementById(`start-${id}`);start.disabled=false;start.textContent='시작';document.getElementById(`status-${id}`).textContent='시작 버튼을 누르면 시간이 흐릅니다.';}
+function parseAnswer(value){return Number(String(value).trim().replace(',','.').replace(/−/g,'-'))}
+function gradeAnswers(id){
+  const inputs=[...document.querySelectorAll(`#answers-${id} .answer-input`)];let correct=0,blank=0;
+  inputs.forEach(input=>{const feedback=input.nextElementSibling,raw=input.value.trim(),expected=Number(input.dataset.answer);input.classList.remove('correct','wrong','blank');feedback.textContent='';if(raw===''){blank++;input.classList.add('blank');feedback.textContent='미입력';return}const actual=parseAnswer(raw),ok=Number.isFinite(actual)&&Math.abs(actual-expected)<=.05;if(ok){correct++;input.classList.add('correct');feedback.textContent='정답'}else{input.classList.add('wrong');feedback.textContent=`정답 ${fmt(expected)}`}});
+  const result=document.getElementById(`answer-result-${id}`),percent=Math.round(correct/inputs.length*100);result.className=`answer-result show ${correct===inputs.length?'pass':'retry'}`;result.textContent=`${correct} / ${inputs.length}개 정답 (${percent}점)${blank?` · 미입력 ${blank}개`:''} · 부재력도 제외`;return {correct,total:inputs.length,blank,percent};
+}
+function clearAnswers(id){document.querySelectorAll(`#answers-${id} .answer-input`).forEach(input=>{input.value='';input.classList.remove('correct','wrong','blank');input.nextElementSibling.textContent=''});const result=document.getElementById(`answer-result-${id}`);result.className='answer-result';result.textContent='';}
+function showSolution(id,forced=false){const t=timers[id];if(!forced&&t.running&&t.remaining>0&&!confirm(`아직 ${Math.ceil(t.remaining/60)}분 정도 남았습니다. 풀이를 공개할까요?`))return;t.running=false;document.getElementById(`solution-${id}`).classList.add('open');document.getElementById(`solution-btn-${id}`).style.display='none';document.getElementById(`start-${id}`).textContent='계속';document.getElementById(`solution-${id}`).scrollIntoView({behavior:'smooth',block:'start'});}
+setInterval(()=>{problems.forEach(p=>{const t=timers[p.id];if(!t||!t.running)return;t.remaining--;updateTimer(p.id);if(t.remaining<=0){t.remaining=0;t.running=false;t.expired=true;gradeAnswers(p.id);document.getElementById(`status-${p.id}`).textContent='시간 종료 — 답안을 채점하고 풀이를 공개했습니다.';document.getElementById(`start-${p.id}`).disabled=true;showSolution(p.id,true);}})},1000);
+render();
+</script>
+</body>
+</html>
